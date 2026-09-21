@@ -55,7 +55,7 @@ rpl::producer<TextWithEntities> Text() {
 } // namespace
 
 void AboutBox(not_null<Ui::GenericBox*> box, Window::SessionController* controller) {
-	box->setTitle(rpl::single(u"Spogram Desktop"_q));
+	box->setTitle(rpl::single(u"Monstergram Desktop"_q));
 
 	auto layout = box->verticalLayout();
 

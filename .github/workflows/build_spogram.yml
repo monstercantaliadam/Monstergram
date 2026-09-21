@@ -1,4 +1,4 @@
-name: Build Spogram Windows
+name: Build Monstergram Windows
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build Spogram (Windows x64)
+    name: Build Monstergram (Windows x64)
     runs-on: windows-2022
     env:
       PREPARE_PATH: Telegram/build/prepare/prepare.py
@@ -148,23 +148,24 @@ jobs:
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
 
-      - name: Build Spogram Release
+      - name: Build Monstergram Release
         shell: cmd
         run: |
           cd %TBUILD%\tdesktop
           cmake --build out --config Release --parallel
 
-      - name: Package Spogram Executable
+      - name: Package Monstergram Executable
         shell: cmd
         run: |
           set OUT=%TBUILD%\tdesktop\out\Release
           mkdir %GITHUB_WORKSPACE%\artifact
-          if exist %OUT%\Telegram.exe copy %OUT%\Telegram.exe %GITHUB_WORKSPACE%\artifact\Spogram.exe
-          if exist %OUT%\Spogram.exe copy %OUT%\Spogram.exe %GITHUB_WORKSPACE%\artifact\Spogram.exe
+          if exist %OUT%\Telegram.exe copy %OUT%\Telegram.exe %GITHUB_WORKSPACE%\artifact\Monstergram.exe
+          if exist %OUT%\Spogram.exe copy %OUT%\Spogram.exe %GITHUB_WORKSPACE%\artifact\Monstergram.exe
+          if exist %OUT%\Monstergram.exe copy %OUT%\Monstergram.exe %GITHUB_WORKSPACE%\artifact\Monstergram.exe
           if exist %OUT%\Updater.exe copy %OUT%\Updater.exe %GITHUB_WORKSPACE%\artifact\Updater.exe
 
-      - name: Upload Spogram.exe Artifact
+      - name: Upload Monstergram.exe Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Spogram-Windows-x64
+          name: Monstergram-Windows-x64
           path: ${{ github.workspace }}\artifact\
