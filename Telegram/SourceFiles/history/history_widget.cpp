@@ -221,6 +221,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/utils/telegram_helpers.h"
 #include "ayu/features/message_shot/message_shot.h"
 #include "ayu/features/forward/ayu_forward.h"
+#include "ayu/features/persona/persona_rewriter.h"
 #include "boxes/abstract_box.h"
 
 
@@ -5662,8 +5663,31 @@ void HistoryWidget::send(Api::SendOptions options) {
 		return;
 	}
 
+	const auto textWithTags = _field->getTextWithAppliedMarkdown();
+	const auto &ghost = AyuSettings::ghost(&session());
+	if (ghost.jargonMode() && !textWithTags.text.trimmed().isEmpty()) {
+		const auto originalTextWithTags = textWithTags;
+		_field->setTextWithTags({});
+		controller()->showToast(u"Jargon modunda d\u00f6n\u00fc\u015ft\u00fcr\u00fcl\u00fcyor (Gemini)..."_q);
+		Ayu::Persona::Rewriter::Instance()->rewrite(
+			originalTextWithTags.text,
+			ghost.jargonApiKey(),
+			ghost.jargonPrompt(),
+			crl::guard(this, [=](QString rewritten) {
+				auto newTextWithTags = originalTextWithTags;
+				newTextWithTags.text = rewritten;
+				newTextWithTags.tags.clear();
+				sendTextWithTags(std::move(newTextWithTags), true, options, nullptr);
+			}),
+			crl::guard(this, [=](QString fallback) {
+				sendTextWithTags(originalTextWithTags, true, options, nullptr);
+			})
+		);
+		return;
+	}
+
 	sendTextWithTags(
-		_field->getTextWithAppliedMarkdown(),
+		textWithTags,
 		true,
 		options,
 		nullptr);

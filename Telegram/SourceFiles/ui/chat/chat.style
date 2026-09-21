@@ -23,7 +23,7 @@ msgDateFont: font(13px);
 msgMinWidth: 160px;
 msgPhotoSize: 33px;
 msgPhotoSkip: 40px;
-msgPadding: margins(11px, 8px, 11px, 8px);
+msgPadding: margins(12px, 8px, 12px, 8px);
 msgTagBadgePadding: margins(5px, -1px, 5px, 0px);
 msgTagBadgeBoostSkip: 2px;
 
@@ -31,11 +31,11 @@ tagInfoIcon: icon {{ "chat/large_user_tag-48x48", windowFgActive }};
 tagInfoIconPadding: margins(8px, 8px, 8px, 8px);
 tagInfoPreviewHeight: 80px;
 tagInfoPreviewGap: 8px;
-tagInfoPreviewBubbleRadius: 8px;
+tagInfoPreviewBubbleRadius: 10px;
 tagInfoPreviewLineHeight: 6px;
 tagInfoPreviewLineSpacing: 4px;
 tagInfoPreviewBubblePadding: margins(10px, 8px, 10px, 8px);
-tagInfoPreviewRadius: 8px;
+tagInfoPreviewRadius: 10px;
 tagInfoPreviewBubbleRightMargin: 10px;
 tagInfoPreviewFadeWidth: 24px;
 tagInfoPreviewBadgeTop: 6px;
@@ -50,8 +50,8 @@ tagInfoAdminsOnlyLabel: FlatLabel(defaultFlatLabel) {
 	}
 }
 
-msgMargin: margins(16px, 6px, 56px, 2px);
-msgMarginTopAttached: 0px;
+msgMargin: margins(12px, 4px, 48px, 2px);
+msgMarginTopAttached: 2px;
 msgShadow: 2px;
 msgSelectionOffset: 30px;
 msgSelectionBottomSkip: 5px;
@@ -316,8 +316,8 @@ historyInfoToast: Toast(defaultToast) {
 }
 historyInfoToastIcon: icon {{ "toast/info", toastFg }};
 
-bubbleRadiusSmall: roundRadiusLarge;
-bubbleRadiusLarge: 16px;
+bubbleRadiusSmall: 8px;
+bubbleRadiusLarge: 18px;
 
 historyPhotoLeft: 14px;
 historyPhotoBubbleMinWidth: 200px;

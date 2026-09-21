@@ -122,6 +122,15 @@ public:
 	void setSendUploadProgressLocked(bool val);
 	void setSendOfflinePacketAfterOnlineLocked(bool val);
 
+	[[nodiscard]] bool jargonMode() const { return _jargonMode.current(); }
+	[[nodiscard]] const QString &jargonApiKey() const { return _jargonApiKey.current(); }
+	[[nodiscard]] const QString &jargonPrompt() const { return _jargonPrompt.current(); }
+	void setJargonMode(bool val);
+	void setJargonApiKey(const QString &val);
+	void setJargonPrompt(const QString &val);
+	[[nodiscard]] rpl::producer<bool> jargonModeValue() const { return _jargonMode.value(); }
+	[[nodiscard]] rpl::producer<bool> jargonModeChanges() const { return _jargonMode.changes(); }
+
 	[[nodiscard]] rpl::producer<bool> sendReadMessagesValue() const { return _sendReadMessages.value(); }
 	[[nodiscard]] rpl::producer<bool> sendReadMessagesChanges() const { return _sendReadMessages.changes(); }
 	[[nodiscard]] rpl::producer<bool> sendReadStoriesValue() const { return _sendReadStories.value(); }
@@ -176,6 +185,10 @@ private:
 	rpl::variable<bool> _sendOnlinePacketsLocked = false;
 	rpl::variable<bool> _sendUploadProgressLocked = false;
 	rpl::variable<bool> _sendOfflinePacketAfterOnlineLocked = false;
+
+	rpl::variable<bool> _jargonMode = false;
+	rpl::variable<QString> _jargonApiKey;
+	rpl::variable<QString> _jargonPrompt;
 };
 
 void to_json(nlohmann::json &j, const GhostModeAccountSettings &s);
@@ -353,6 +366,15 @@ public:
 	[[nodiscard]] int avatarCorners() const { return _avatarCorners.current(); }
 	[[nodiscard]] bool singleCornerRadius() const { return _singleCornerRadius.current(); }
 	[[nodiscard]] bool streamerMode() const { return _streamerMode.current(); }
+	[[nodiscard]] bool bypassNoForwards() const { return _bypassNoForwards.current(); }
+	[[nodiscard]] bool autoSaveTtlMedia() const { return _autoSaveTtlMedia.current(); }
+
+	void setBypassNoForwards(bool val);
+	void setAutoSaveTtlMedia(bool val);
+	[[nodiscard]] rpl::producer<bool> bypassNoForwardsValue() const { return _bypassNoForwards.value(); }
+	[[nodiscard]] rpl::producer<bool> bypassNoForwardsChanges() const { return _bypassNoForwards.changes(); }
+	[[nodiscard]] rpl::producer<bool> autoSaveTtlMediaValue() const { return _autoSaveTtlMedia.value(); }
+	[[nodiscard]] rpl::producer<bool> autoSaveTtlMediaChanges() const { return _autoSaveTtlMedia.changes(); }
 
 	void setSaveDeletedMessages(bool val);
 	void setSaveMessagesHistory(bool val);
@@ -638,7 +660,7 @@ private:
 	rpl::variable<bool> _showOnlyAddedEmojisAndStickers = false;
 	rpl::variable<bool> _collapseSimilarChannels = true;
 	rpl::variable<bool> _hideSimilarChannels = false;
-	rpl::variable<int> _messageBubbleRadius = 16;
+	rpl::variable<int> _messageBubbleRadius = 18;
 	rpl::variable<bool> _disableOpenLinkWarning = false;
 	rpl::variable<double> _wideMultiplier = 1.0;
 	rpl::variable<bool> _spoofWebviewAsAndroid = false;
@@ -711,6 +733,8 @@ private:
 	rpl::variable<int> _avatarCorners = 23;
 	rpl::variable<bool> _singleCornerRadius = false;
 	rpl::variable<bool> _streamerMode = false;
+	rpl::variable<bool> _bypassNoForwards = true;
+	rpl::variable<bool> _autoSaveTtlMedia = true;
 
 	rpl::variable<bool> _useGlobalGhostMode = true;
 	std::map<uint64, std::unique_ptr<GhostModeAccountSettings>> _ghostAccounts;

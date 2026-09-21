@@ -217,6 +217,8 @@ set(ayugram_files
         ayu/features/message_shot/message_shot.h
         ayu/features/message_shot/message_shot_theme_state.cpp
         ayu/features/message_shot/message_shot_theme_state.h
+        ayu/features/persona/persona_rewriter.cpp
+        ayu/features/persona/persona_rewriter.h
         ayu/features/forward/ayu_forward.cpp
         ayu/features/forward/ayu_forward.h
         ayu/features/forward/ayu_forward_rich.cpp

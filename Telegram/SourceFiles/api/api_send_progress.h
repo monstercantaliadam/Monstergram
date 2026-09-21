@@ -71,6 +71,9 @@ public:
 		not_null<History*> history,
 		SendProgressType type);
 	void cancelTyping(not_null<History*> history);
+	void forceSendAction(
+		not_null<History*> history,
+		SendProgressType type);
 
 private:
 	struct Key {

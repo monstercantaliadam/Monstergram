@@ -17,9 +17,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 namespace Ui {
 namespace {
 
-constexpr auto kBubbleRadiusSliderMax = 16;
+constexpr auto kBubbleRadiusSliderMax = 20;
 
-int AppliedBubbleRadius = 16;
+int AppliedBubbleRadius = 18;
 int BubbleRadiusOverride = -1;
 
 [[nodiscard]] int ClampBubbleRadiusValue(int value) {

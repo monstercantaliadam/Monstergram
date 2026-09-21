@@ -414,6 +414,22 @@ bool AddForwardSelectedAction(
 			ExtractIdsList(request.selectedItems),
 			callback);
 	}, &st::menuIconForward);
+	menu->addAction(u"Se\u00e7ilenleri Al\u0131nt\u0131s\u0131z \u0130let"_q, [=] {
+		const auto weak = base::make_weak(list);
+		const auto callback = [=] {
+			if (const auto strong = weak.get()) {
+				strong->cancelSelection();
+			}
+		};
+		auto draft = Data::ForwardDraft{
+			.ids = ExtractIdsList(request.selectedItems),
+			.options = Data::ForwardOptions::NoSenderNames,
+		};
+		Window::ShowForwardMessagesBox(
+			request.navigation,
+			std::move(draft),
+			callback);
+	}, &st::menuIconForward);
 	return true;
 }
 
@@ -444,6 +460,19 @@ bool AddForwardMessageAction(
 				(asGroup
 					? owner->itemOrItsGroup(item)
 					: MessageIdsList{ 1, itemId }));
+		}
+	}, &st::menuIconForward);
+	menu->addAction(u"Al\u0131nt\u0131s\u0131z \u0130let"_q, [=] {
+		if (const auto item = owner->message(itemId)) {
+			auto draft = Data::ForwardDraft{
+				.ids = (asGroup
+					? owner->itemOrItsGroup(item)
+					: MessageIdsList{ 1, itemId }),
+				.options = Data::ForwardOptions::NoSenderNames,
+			};
+			Window::ShowForwardMessagesBox(
+				request.navigation,
+				std::move(draft));
 		}
 	}, &st::menuIconForward);
 	return true;

@@ -3052,7 +3052,7 @@ bool HistoryItem::allowsForward() const {
 	return !isService()
 		&& isRegular()
 		&& !forbidsForward()
-		&& history()->peer->allowsForwarding()
+		&& (history()->peer->allowsForwarding() || AyuSettings::getInstance().bypassNoForwards())
 		&& (!_media || _media->allowsForward());
 }
 

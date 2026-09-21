@@ -1,22 +1,25 @@
-# AyuGram
+# Spogram Desktop
 
-![AyuGram Logo](.github/AyuGram.png) ![AyuChan](.github/AyuChan.png)
+![Spogram Banner](.github/SpogramBanner.png)
 
-[ English  |   [Русский](README-RU.md) ]
+<p align="center">
+  <img src=".github/Spogram.png" width="140" alt="Spogram Logo" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src=".github/SpogramMascot.png" width="140" alt="Spogram Mascot" />
+</p>
 
 ## Features
 
-- Full ghost mode (flexible)
-- Messages history
-- Anti-recall
-- Font customization
-- Streamer mode
-- Local Telegram Premium
-- Translator
-- Media preview & quick reaction on force click (macOS)
-- Enhanced appearance
-
-And many more. Check out our [Documentation](https://docs.ayugram.one/desktop/).
+- **Gemini AI Persona & Jargon Rewriter** (`gemini-3.8-flash` natural style rewriter)
+- **Bypass "NoForwards" / Restricted Channels** (Forward, copy, and save without limits)
+- **Direct Forward Without Quote** (Send as copy with 1-click)
+- **View-Once / TTL Media Preservation** (Permanent save & auto-backup)
+- **Fake Status Simulator** (Simulate typing and voice recording anytime)
+- **Full Ghost Mode** (Hide online, read receipts, stories, typing)
+- **Messages History & Anti-Recall** (Save deleted messages and edits in local SQLite)
+- **Streamer Mode** (OBS / screen capture exclusion)
+- **Local Telegram Premium** & Custom Fonts
+- **Enhanced Appearance & Customization**
 
 <h3>
   <details>

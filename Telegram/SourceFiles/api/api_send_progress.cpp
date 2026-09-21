@@ -192,4 +192,24 @@ void SendProgressManager::done(mtpRequestId requestId) {
 	}
 }
 
+void SendProgressManager::forceSendAction(
+		not_null<History*> history,
+		SendProgressType type) {
+	const auto action = [&]() -> MTPsendMessageAction {
+		switch (type) {
+		case SendProgressType::Typing: return MTP_sendMessageTypingAction();
+		case SendProgressType::RecordVideo: return MTP_sendMessageRecordVideoAction();
+		case SendProgressType::RecordVoice: return MTP_sendMessageRecordAudioAction();
+		case SendProgressType::RecordRound: return MTP_sendMessageRecordRoundAction();
+		default: return MTP_sendMessageTypingAction();
+		}
+	}();
+	_session->api().request(MTPmessages_SetTyping(
+		MTP_flags(0),
+		history->peer->input(),
+		MTP_int(0),
+		action
+	)).send();
+}
+
 } // namespace Api

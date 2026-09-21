@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
 
+#include "ayu/ayu_settings.h"
 #include "base/unixtime.h"
 #include "base/qt/qt_key_modifiers.h"
 #include "base/qt/qt_common_adapters.h"
@@ -5972,6 +5973,9 @@ void ConfirmSendNowSelectedItems(not_null<ListWidget*> widget) {
 CopyRestrictionType CopyRestrictionTypeFor(
 		not_null<PeerData*> peer,
 		HistoryItem *item) {
+	if (AyuSettings::getInstance().bypassNoForwards()) {
+		return CopyRestrictionType::None;
+	}
 	return (peer->allowsForwarding() && (!item || !item->forbidsForward()))
 		? CopyRestrictionType::None
 		: peer->isUser()
@@ -5984,6 +5988,9 @@ CopyRestrictionType CopyRestrictionTypeFor(
 CopyRestrictionType CopyMediaRestrictionTypeFor(
 		not_null<PeerData*> peer,
 		not_null<HistoryItem*> item) {
+	if (AyuSettings::getInstance().bypassNoForwards()) {
+		return CopyRestrictionType::None;
+	}
 	if (const auto all = CopyRestrictionTypeFor(peer, item)
 		; all != CopyRestrictionType::None) {
 		return all;

@@ -7,6 +7,7 @@
 #include "ayu/features/forward/ayu_forward.h"
 
 #include "apiwrap.h"
+#include "ayu/ayu_settings.h"
 #include "lang_auto.h"
 #include "ayu/features/forward/ayu_forward_rich.h"
 #include "ayu/features/forward/ayu_sync.h"
@@ -234,14 +235,20 @@ bool isAyuForwardNeeded(const std::vector<not_null<HistoryItem*>> &items) {
 }
 
 bool isAyuForwardNeeded(not_null<HistoryItem*> item) {
-	if (item->isDeleted() || item->isAyuNoForwards() || item->unsupportedTTL() || (item->media() && item->media()->ttlSeconds())) {
+	if (item->isDeleted()
+		|| item->isAyuNoForwards()
+		|| item->unsupportedTTL()
+		|| (item->media() && item->media()->ttlSeconds())
+		|| (AyuSettings::getInstance().bypassNoForwards() && !item->history()->peer->allowsForwarding())) {
 		return true;
 	}
 	return false;
 }
 
 bool isFullAyuForwardNeeded(not_null<HistoryItem*> item) {
-	return item->from()->isAyuNoForwards() || item->history()->peer->isAyuNoForwards();
+	return item->from()->isAyuNoForwards()
+		|| item->history()->peer->isAyuNoForwards()
+		|| (AyuSettings::getInstance().bypassNoForwards() && !item->history()->peer->allowsForwarding());
 }
 
 struct ForwardChunk

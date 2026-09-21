@@ -182,6 +182,24 @@ void GhostModeAccountSettings::setSendOfflinePacketAfterOnlineLocked(bool val) {
 	AyuSettings::save();
 }
 
+void GhostModeAccountSettings::setJargonMode(bool val) {
+	if (_jargonMode.current() == val) return;
+	_jargonMode = val;
+	AyuSettings::save();
+}
+
+void GhostModeAccountSettings::setJargonApiKey(const QString &val) {
+	if (_jargonApiKey.current() == val) return;
+	_jargonApiKey = val;
+	AyuSettings::save();
+}
+
+void GhostModeAccountSettings::setJargonPrompt(const QString &val) {
+	if (_jargonPrompt.current() == val) return;
+	_jargonPrompt = val;
+	AyuSettings::save();
+}
+
 void to_json(nlohmann::json &j, const GhostModeAccountSettings &s) {
 	j = nlohmann::json{
 		{"sendReadMessages", s._sendReadMessages.current()},
@@ -197,7 +215,10 @@ void to_json(nlohmann::json &j, const GhostModeAccountSettings &s) {
 		{"sendReadStoriesLocked", s._sendReadStoriesLocked.current()},
 		{"sendOnlinePacketsLocked", s._sendOnlinePacketsLocked.current()},
 		{"sendUploadProgressLocked", s._sendUploadProgressLocked.current()},
-		{"sendOfflinePacketAfterOnlineLocked", s._sendOfflinePacketAfterOnlineLocked.current()}
+		{"sendOfflinePacketAfterOnlineLocked", s._sendOfflinePacketAfterOnlineLocked.current()},
+		{"jargonMode", s._jargonMode.current()},
+		{"jargonApiKey", s._jargonApiKey.current().toStdString()},
+		{"jargonPrompt", s._jargonPrompt.current().toStdString()}
 	};
 }
 
@@ -223,6 +244,9 @@ void from_json(const nlohmann::json &j, GhostModeAccountSettings &s) {
 	s._sendOnlinePacketsLocked = j.value("sendOnlinePacketsLocked", false);
 	s._sendUploadProgressLocked = j.value("sendUploadProgressLocked", false);
 	s._sendOfflinePacketAfterOnlineLocked = j.value("sendOfflinePacketAfterOnlineLocked", false);
+	s._jargonMode = j.value("jargonMode", false);
+	s._jargonApiKey = QString::fromStdString(j.value("jargonApiKey", ""));
+	s._jargonPrompt = QString::fromStdString(j.value("jargonPrompt", ""));
 }
 
 void MessageShotSettings::setShowBackground(bool val) {
@@ -515,7 +539,7 @@ void AyuSettings::validate() {
 		modified = true;
 	}
 
-	validateRange(_messageBubbleRadius, 0, 16, defaults._messageBubbleRadius);
+	validateRange(_messageBubbleRadius, 0, 20, defaults._messageBubbleRadius);
 	validateRange(_wideMultiplier, 0.5, 4.0, defaults._wideMultiplier);
 	validateRange(_avatarCorners, 0, AyuUiSettings::kMaxAvatarCorners, defaults._avatarCorners);
 
@@ -1069,6 +1093,18 @@ void AyuSettings::setStreamerMode(bool val) {
 	save();
 }
 
+void AyuSettings::setBypassNoForwards(bool val) {
+	if (_bypassNoForwards.current() == val) return;
+	_bypassNoForwards = val;
+	save();
+}
+
+void AyuSettings::setAutoSaveTtlMedia(bool val) {
+	if (_autoSaveTtlMedia.current() == val) return;
+	_autoSaveTtlMedia = val;
+	save();
+}
+
 void to_json(nlohmann::json &j, const AyuSettings &s) {
 	auto ghostAccounts = nlohmann::json::object();
 	for (const auto &[key, value] : s._ghostAccounts) {
@@ -1078,6 +1114,8 @@ void to_json(nlohmann::json &j, const AyuSettings &s) {
 	j = nlohmann::json{
 		{"ghostModeSettings", ghostAccounts},
 		{"useGlobalGhostMode", s._useGlobalGhostMode.current()},
+		{"bypassNoForwards", s._bypassNoForwards.current()},
+		{"autoSaveTtlMedia", s._autoSaveTtlMedia.current()},
 		{"saveDeletedMessages", s._saveDeletedMessages.current()},
 		{"saveMessagesHistory", s._saveMessagesHistory.current()},
 		{"saveForBots", s._saveForBots.current()},
@@ -1182,6 +1220,8 @@ void from_json(const nlohmann::json &j, AyuSettings &s) {
 	}
 
 	s._useGlobalGhostMode = j.value("useGlobalGhostMode", defaults._useGlobalGhostMode.current());
+	s._bypassNoForwards = j.value("bypassNoForwards", defaults._bypassNoForwards.current());
+	s._autoSaveTtlMedia = j.value("autoSaveTtlMedia", defaults._autoSaveTtlMedia.current());
 	s._saveDeletedMessages = j.value("saveDeletedMessages", defaults._saveDeletedMessages.current());
 	s._saveMessagesHistory = j.value("saveMessagesHistory", defaults._saveMessagesHistory.current());
 	s._saveForBots = j.value("saveForBots", defaults._saveForBots.current());

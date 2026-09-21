@@ -64,6 +64,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 // AyuGram includes
 #include "ayu/ayu_settings.h"
+#include "api/api_send_progress.h"
+#include "window/window_session_controller.h"
 
 
 namespace SendMenu {
@@ -756,6 +758,51 @@ FillMenuResult FillSendMenu(
 			sendWithoutSound ? tr::ayu_SendWithSound(tr::now) : tr::lng_send_silent_message(tr::now),
 			[=] { action({ Api::SendOptions{ .silent = true } }, details); },
 			sendWithoutSound ? &icons.menuUnmute : &icons.menuMute);
+	}
+
+	if (maybeShow) {
+		auto &ghost = AyuSettings::ghost(&maybeShow->session());
+		const auto jargonActive = ghost.jargonMode();
+		menu->addAction(
+			jargonActive ? u"Jargon Modunu Kapat"_q : u"Jargon Modunu A\u00e7 (Gemini)"_q,
+			[=, &ghost] {
+				ghost.setJargonMode(!jargonActive);
+				if (maybeShow) {
+					maybeShow->showToast(
+						!jargonActive
+							? u"Jargon Modu Aktif (Gemini 3.8 Flash)"_q
+							: u"Jargon Modu Kapat\u0131ld\u0131"_q);
+				}
+			},
+			&icons.menuSchedule);
+
+		menu->addAction(
+			u"Sahte Durum: Yaz\u0131yor..."_q,
+			[=] {
+				if (const auto window = maybeShow->resolveWindow()) {
+					if (const auto history = window->activeChatCurrent().history()) {
+						maybeShow->session().sendProgressManager().forceSendAction(
+							history,
+							Api::SendProgressType::Typing);
+						maybeShow->showToast(u"\"Yaz\u0131yor...\" durumu g\u00f6nderildi"_q);
+					}
+				}
+			},
+			&icons.menuMute);
+
+		menu->addAction(
+			u"Sahte Durum: Ses Kaydediyor..."_q,
+			[=] {
+				if (const auto window = maybeShow->resolveWindow()) {
+					if (const auto history = window->activeChatCurrent().history()) {
+						maybeShow->session().sendProgressManager().forceSendAction(
+							history,
+							Api::SendProgressType::RecordVoice);
+						maybeShow->showToast(u"\"Ses kaydediyor...\" durumu g\u00f6nderildi"_q);
+					}
+				}
+			},
+			&icons.menuMute);
 	}
 	if (sending && type != Type::SilentOnly) {
 		menu->addAction(

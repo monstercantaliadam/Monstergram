@@ -244,7 +244,7 @@ void BuildWideMessagesMultiplier(
 	ayu.addSlider({
 		.id = u"ayu/messageBubbleRadius"_q,
 		.title = tr::ayu_MessageBubbleRadius(),
-		.steps = 17,
+		.steps = 21,
 		.current = settings->messageBubbleRadius(),
 		.indexToValue = [](int index) { return index; },
 		.onChanged = [=](int index) {

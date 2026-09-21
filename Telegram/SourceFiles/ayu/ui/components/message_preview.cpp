@@ -46,7 +46,7 @@ struct MessagePreview::State {
 	Ui::Animations::Simple heightAnimation;
 	std::unique_ptr<Ui::ChatTheme> theme;
 	int currentHeight = 0;
-	int bubbleRadius = 16;
+	int bubbleRadius = 18;
 };
 
 MessagePreview::MessagePreview(

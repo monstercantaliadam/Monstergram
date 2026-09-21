@@ -1,0 +1,32 @@
+diff --git a/ui/colors.palette b/ui/colors.palette
+index de66484..09398b6 100644
+--- a/ui/colors.palette
++++ b/ui/colors.palette
+@@ -348,21 +348,21 @@ historyScrollBgOver: #517c416b; // scroll bar background with mouse over the scr
+ 
+ msgInBg: windowBg; // inbox message background
+ msgInBgSelected: #c2dcf2; // inbox selected message background (and background of selected text in those messages)
+-msgOutBg: #effdde; // outbox message background
++msgOutBg: #e1ffc7; // outbox message background
+ msgOutBgSelected: #b7dbdb; // outbox selected message background (and background of selected text in those messages)
+ msgSelectOverlay: #358cd44c; // overlay which is filling the media parts of selected messages (like in selected photo message)
+ msgStickerOverlay: #358cd47f; // overlay which is filling the selected sticker message
+ msgInServiceFg: windowActiveTextFg; // inbox message information text (like information about a forwarded message original sender)
+ msgInServiceFgSelected: windowActiveTextFg; // inbox selected message information text (like information about a forwarded message original sender)
+-msgOutServiceFg: #45a32d; // outbox message information text (like information about a forwarded message original sender)
++msgOutServiceFg: #388e3c; // outbox message information text (like information about a forwarded message original sender)
+ msgOutServiceFgSelected: #469992; // outbox message information text (like information about a forwarded message original sender)
+-msgInShadow: #748ea229; // inbox message shadow (below the bubble)
++msgInShadow: #0000000a; // inbox message shadow (below the bubble)
+ msgInShadowSelected: #548dbb29; // inbox selected message shadow (below the bubble)
+-msgOutShadow: #3ac3461d; // outbox message shadow (below the bubble)
++msgOutShadow: #0000000a; // outbox message shadow (below the bubble)
+ msgOutShadowSelected: #37a78d22; // outbox selected message shadow (below the bubble)
+-msgInDateFg: #a0acb6; // inbox message time text
++msgInDateFg: #8e8e93; // inbox message time text
+ msgInDateFgSelected: #6a9cc5; // inbox selected message time text
+-msgOutDateFg: #6db566; // outbox message time text
++msgOutDateFg: #539e4a; // outbox message time text
+ msgOutDateFgSelected: #56b2a6; // outbox selected message time text
+ msgServiceFg: windowFgActive; // service message text (like date dividers or service message about the group title being changed)
+ msgServiceBg: #517c417f; // service message background (like in a service message about group title being changed) (adjusted)
