@@ -21,7 +21,7 @@ jobs:
           echo TBUILD=%GITHUB_WORKSPACE%\TBuild>>%GITHUB_ENV%
           echo LibrariesPath=%GITHUB_WORKSPACE%\TBuild\Libraries\win64>>%GITHUB_ENV%
 
-      - name: Checkout Spogram repository
+      - name: Checkout Monstergram repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -62,6 +62,9 @@ jobs:
             echo '#pragma once'
             embed_key "AlphaPrivateKey" "$DPDIR/private_alpha.pem"
           } > "$DPDIR/alpha_private.h"
+
+          cp "$DPDIR/packer_private.h" "$TBUILD/tdesktop/Telegram/SourceFiles/_other/packer_private.h"
+          cp "$DPDIR/alpha_private.h" "$TBUILD/tdesktop/Telegram/SourceFiles/_other/alpha_private.h"
 
           cat > "$DPDIR/custom_api_id.h" <<'EOF'
           #pragma once

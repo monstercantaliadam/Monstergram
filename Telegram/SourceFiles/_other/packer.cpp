@@ -29,9 +29,24 @@ w/CVnbwQOw0g5GBwwFV3r0uTTvy44xx8XXxk+Qknu4eBCsmrAFNnAgMBAAE=\n\
 
 extern const char *PrivateKey;
 extern const char *PrivateBetaKey;
+extern const char *AlphaPrivateKey;
 
-// AyuGram includes
-#include "packer_private.h" // RSA PRIVATE KEYS for update signing
+#if __has_include("packer_private.h")
+#include "packer_private.h"
+#elif __has_include("../../../../DesktopPrivate/packer_private.h")
+#include "../../../../DesktopPrivate/packer_private.h"
+#else
+const char *PrivateKey = "";
+const char *PrivateBetaKey = "";
+#endif
+
+#if __has_include("alpha_private.h")
+#include "alpha_private.h"
+#elif __has_include("../../../../DesktopPrivate/alpha_private.h")
+#include "../../../../DesktopPrivate/alpha_private.h"
+#else
+const char *AlphaPrivateKey = "";
+#endif
 
 
 QString countAlphaVersionSignature(quint64 version);
