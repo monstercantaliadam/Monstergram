@@ -1,9 +1,11 @@
 name: Build Monstergram Windows
 
 on:
-  push:
-    branches: [ dev, master, main ]
   workflow_dispatch:
+
+concurrency:
+  group: monstergram-windows-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -182,11 +184,11 @@ jobs:
       - name: Build Monstergram Release
         shell: cmd
         env:
-          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          CMAKE_BUILD_PARALLEL_LEVEL: 1
           _PreferredToolArchitecture: x64
         run: |
           cd %TBUILD%\tdesktop
-          cmake --build out --config Release --parallel 2
+          cmake --build out --config Release --parallel 1 -- /p:CL_MPCount=1
 
       - name: Package Monstergram Executable
         shell: cmd
