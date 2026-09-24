@@ -112,8 +112,10 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-x64-third-party-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-third-party-
+          key: ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}-
+            ${{ runner.OS }}-x64-third-party-${{ env.CACHE_KEY }}
 
       - name: Libraries Cache
         id: cache-libs
@@ -125,8 +127,10 @@ jobs:
             !${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\*
             !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-libs-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-libs-
+          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}-
+            ${{ runner.OS }}-x64-libs-${{ env.CACHE_KEY }}
 
       - name: Qt Cache
         id: cache-qt
@@ -135,8 +139,10 @@ jobs:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-qt-${{ env.CACHE_KEY }}
-          restore-keys: ${{ runner.OS }}-x64-qt-
+          key: ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-
+            ${{ runner.OS }}-x64-qt-${{ env.CACHE_KEY }}
 
       - name: Prepare Libraries
         shell: cmd
@@ -173,14 +179,14 @@ jobs:
 
       - name: Save ThirdParty Cache
         uses: actions/cache/save@v4
-        if: always() && steps.cache-third-party.outputs.cache-hit != 'true'
+        if: success()
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-x64-third-party-${{ env.CACHE_KEY }}
+          key: ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save Libraries Cache
         uses: actions/cache/save@v4
-        if: always() && steps.cache-libs.outputs.cache-hit != 'true'
+        if: success()
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -188,16 +194,16 @@ jobs:
             !${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\*
             !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-libs-${{ env.CACHE_KEY }}
+          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save Qt Cache
         uses: actions/cache/save@v4
-        if: always() && steps.cache-qt.outputs.cache-hit != 'true'
+        if: success()
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-qt-${{ env.CACHE_KEY }}
+          key: ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Configure CMake
         shell: cmd
