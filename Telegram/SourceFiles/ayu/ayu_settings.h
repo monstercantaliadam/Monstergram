@@ -269,6 +269,9 @@ public:
 
 	[[nodiscard]] bool useGlobalGhostMode() const { return _useGlobalGhostMode.current(); }
 	void setUseGlobalGhostMode(bool val);
+	[[nodiscard]] const std::vector<QString> &quickReplies() const { return _quickReplies; }
+	bool addQuickReply(const QString &text);
+	void removeQuickReply(const QString &text);
 
 	[[nodiscard]] MessageShotSettings &messageShotSettings() { return _messageShotSettings; }
 	[[nodiscard]] const MessageShotSettings &messageShotSettings() const { return _messageShotSettings; }
@@ -649,6 +652,7 @@ private:
 	rpl::variable<bool> _saveDeletedMessages = true;
 	rpl::variable<bool> _saveMessagesHistory = true;
 	rpl::variable<bool> _saveForBots = false;
+	std::vector<QString> _quickReplies;
 	std::unordered_set<int64> _shadowBanIds;
 	rpl::variable<bool> _filtersEnabled = false;
 	rpl::variable<bool> _filtersEnabledInChats = false;

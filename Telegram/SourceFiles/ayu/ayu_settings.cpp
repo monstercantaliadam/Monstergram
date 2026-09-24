@@ -22,6 +22,7 @@
 #include "window/window_controller.h"
 
 #include <fstream>
+#include <algorithm>
 #include <QApplication>
 
 using json = nlohmann::json;
@@ -485,6 +486,24 @@ void AyuSettings::setUseGlobalGhostMode(bool val) {
 	if (_useGlobalGhostMode.current() == val) return;
 	_useGlobalGhostMode = val;
 	save();
+}
+
+bool AyuSettings::addQuickReply(const QString &text) {
+	if (text.trimmed().isEmpty()
+		|| text.size() > 4096
+		|| _quickReplies.size() >= 20
+		|| std::ranges::find(_quickReplies, text) != _quickReplies.end()) {
+		return false;
+	}
+	_quickReplies.push_back(text);
+	save();
+	return true;
+}
+
+void AyuSettings::removeQuickReply(const QString &text) {
+	if (std::erase(_quickReplies, text)) {
+		save();
+	}
 }
 
 void AyuSettings::addShadowBan(int64 id) {
@@ -1110,10 +1129,15 @@ void to_json(nlohmann::json &j, const AyuSettings &s) {
 	for (const auto &[key, value] : s._ghostAccounts) {
 		ghostAccounts[std::to_string(key)] = *value;
 	}
+	auto quickReplies = std::vector<std::string>();
+	for (const auto &reply : s._quickReplies) {
+		quickReplies.push_back(reply.toStdString());
+	}
 
 	j = nlohmann::json{
 		{"ghostModeSettings", ghostAccounts},
 		{"useGlobalGhostMode", s._useGlobalGhostMode.current()},
+		{"quickReplies", quickReplies},
 		{"bypassNoForwards", s._bypassNoForwards.current()},
 		{"autoSaveTtlMedia", s._autoSaveTtlMedia.current()},
 		{"saveDeletedMessages", s._saveDeletedMessages.current()},
@@ -1220,6 +1244,21 @@ void from_json(const nlohmann::json &j, AyuSettings &s) {
 	}
 
 	s._useGlobalGhostMode = j.value("useGlobalGhostMode", defaults._useGlobalGhostMode.current());
+	s._quickReplies.clear();
+	if (j.contains("quickReplies") && j["quickReplies"].is_array()) {
+		for (const auto &entry : j["quickReplies"]) {
+			if (!entry.is_string() || s._quickReplies.size() >= 20) {
+				continue;
+			}
+			const auto reply = QString::fromStdString(entry.get<std::string>());
+			if (!reply.trimmed().isEmpty()
+				&& reply.size() <= 4096
+				&& std::ranges::find(s._quickReplies, reply)
+					== s._quickReplies.end()) {
+				s._quickReplies.push_back(reply);
+			}
+		}
+	}
 	s._bypassNoForwards = j.value("bypassNoForwards", defaults._bypassNoForwards.current());
 	s._autoSaveTtlMedia = j.value("autoSaveTtlMedia", defaults._autoSaveTtlMedia.current());
 	s._saveDeletedMessages = j.value("saveDeletedMessages", defaults._saveDeletedMessages.current());

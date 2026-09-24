@@ -125,6 +125,11 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 
+#include <QAction>
+#include <QMenu>
+
+#include <algorithm>
+
 // AyuGram includes
 #include "data/data_ai_compose_tones.h"
 #include "ayu/ayu_settings.h"
@@ -2686,6 +2691,54 @@ void ComposeControls::initField() {
 	_field->setEditLinkCallback(
 		DefaultEditLinkCallback(_show, _field, &_st.boxField));
 	_field->setEditLanguageCallback(DefaultEditLanguageCallback(_show));
+	_field->addContextMenuHook([=](Ui::InputField::ContextMenuRequest request) {
+		auto &settings = AyuSettings::getInstance();
+		auto selected = _field->textCursor().selectedText();
+		selected.replace(QChar::ParagraphSeparator, '\n');
+		const auto candidate = selected.isEmpty()
+			? _field->getTextWithTags().text
+			: selected;
+		const auto replies = settings.quickReplies();
+		if (candidate.trimmed().isEmpty() && replies.empty()) {
+			return;
+		}
+		request.menu->addSeparator();
+		const auto menu = request.menu->addMenu(tr::ayu_QuickReplies(tr::now));
+		if (!candidate.trimmed().isEmpty()
+			&& candidate.size() <= 4096
+			&& replies.size() < 20
+			&& std::ranges::find(replies, candidate) == replies.end()) {
+			const auto action = menu->addAction(tr::ayu_SaveQuickReply(tr::now));
+			QObject::connect(action, &QAction::triggered, _field.get(), [=] {
+				AyuSettings::getInstance().addQuickReply(candidate);
+			});
+		}
+		for (const auto &reply : replies) {
+			const auto title = reply.simplified();
+			const auto action = menu->addAction(title.size() > 48
+				? title.left(48) + u"…"_q
+				: title);
+			QObject::connect(action, &QAction::triggered, _field.get(), [=] {
+				auto cursor = _field->textCursor();
+				cursor.insertText(reply);
+				_field->setTextCursor(cursor);
+				_field->setFocusFast();
+			});
+		}
+		if (!replies.empty()) {
+			const auto removeMenu = menu->addMenu(
+				tr::ayu_DeleteQuickReply(tr::now));
+			for (const auto &reply : replies) {
+				const auto title = reply.simplified();
+				const auto action = removeMenu->addAction(title.size() > 48
+					? title.left(48) + u"…"_q
+					: title);
+				QObject::connect(action, &QAction::triggered, _field.get(), [=] {
+					AyuSettings::getInstance().removeQuickReply(reply);
+				});
+			}
+		}
+	});
 
 	const auto rawTextEdit = _field->rawTextEdit().get();
 	rpl::merge(

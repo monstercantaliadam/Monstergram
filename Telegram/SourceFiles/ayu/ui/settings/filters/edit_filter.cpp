@@ -32,6 +32,10 @@
 #include "ui/wrap/slide_wrap.h"
 #include "ui/wrap/vertical_layout.h"
 
+#include "unicode/regex.h"
+
+#include <memory>
+
 namespace Settings {
 
 std::vector<char> generate_uuid_bytes() {
@@ -172,8 +176,71 @@ void RegexEditBuilder(
 			data.reversed,
 			st::defaultBoxCheckbox),
 		st::settingsCheckboxPadding);
+	const auto testValue = box->addRow(
+		object_ptr<Ui::InputField>(
+			box->verticalLayout(),
+			st::windowFilterNameInput,
+			Ui::InputField::Mode::MultiLine,
+			tr::ayu_RegexTestPlaceholder()),
+		st::markdownLinkFieldPadding);
+	const auto testResult = box->addRow(
+		object_ptr<Ui::FlatLabel>(
+			box->verticalLayout(),
+			tr::ayu_RegexTestEmpty(),
+			st::boxLabel),
+		st::settingsCheckboxPadding);
 
 	regexValue->setText(QString::fromStdString(data.text));
+	const auto updateTest = [=] {
+		const auto expression = regexValue->getTextWithTags().text;
+		const auto sample = testValue->getTextWithTags().text;
+		if (expression.isEmpty() || sample.isEmpty()) {
+			testResult->setText(tr::ayu_RegexTestEmpty(tr::now));
+			return;
+		}
+		if (!enabled->checked()) {
+			testResult->setText(tr::ayu_RegexTestDisabled(tr::now));
+			return;
+		}
+		auto status = U_ZERO_ERROR;
+		const auto flags = UREGEX_MULTILINE
+			| (caseInsensitive->checked() ? UREGEX_CASE_INSENSITIVE : 0);
+		const auto pattern = std::unique_ptr<icu::RegexPattern>(
+			icu::RegexPattern::compile(
+				icu::UnicodeString::fromUTF8(expression.toStdString()),
+				flags,
+				status));
+		if (U_FAILURE(status) || !pattern) {
+			testResult->setText(tr::ayu_RegexTestInvalid(tr::now));
+			return;
+		}
+		const auto input = icu::UnicodeString(
+			reinterpret_cast<const UChar*>(sample.constData()),
+			sample.size());
+		const auto matcher = std::unique_ptr<icu::RegexMatcher>(
+			pattern->matcher(input, status));
+		if (U_FAILURE(status) || !matcher) {
+			testResult->setText(tr::ayu_RegexTestInvalid(tr::now));
+			return;
+		}
+		matcher->setTimeLimit(100, status);
+		const auto matched = matcher->find(status);
+		if (U_FAILURE(status)) {
+			testResult->setText(tr::ayu_RegexTestInvalid(tr::now));
+			return;
+		}
+		testResult->setText((matched != reversed->checked())
+			? tr::ayu_RegexTestMatch(tr::now)
+			: tr::ayu_RegexTestNoMatch(tr::now));
+	};
+	regexValue->changes() | rpl::on_next(updateTest, regexValue->lifetime());
+	testValue->changes() | rpl::on_next(updateTest, testValue->lifetime());
+	enabled->checkedChanges(
+	) | rpl::on_next(updateTest, enabled->lifetime());
+	caseInsensitive->checkedChanges(
+	) | rpl::on_next(updateTest, caseInsensitive->lifetime());
+	reversed->checkedChanges(
+	) | rpl::on_next(updateTest, reversed->lifetime());
 
 	auto saveAndClose = [=, id = data.id]
 	{
