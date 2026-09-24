@@ -71,11 +71,11 @@ MessagePreview::MessagePreview(
 		history,
 		history->session().userPeerId(),
 		FullMsgId(),
-		u"Update wehn?"_q);
+		u"Güncelleme ne zaman?"_q);
 
 	const auto ayugramUser = HistoryView::GenerateUser(
 		history,
-		u"AyuGram Releases"_q);
+		u"Monstergram"_q);
 	const auto messageItem = history->addNewLocalMessage({
 		.id = history->nextNonHistoryEntryId(),
 		.flags = (MessageFlag::FakeHistoryItem
@@ -86,7 +86,7 @@ MessagePreview::MessagePreview(
 			.messageId = _state->reply->data()->fullId(),
 		},
 		.date = base::unixtime::now() - 3600,
-	}, TextWithEntities{ u"You need to go outside and touch some grass..."_q },
+	}, TextWithEntities{ u"Biraz dışarı çıkıp hava almalısın..."_q },
 	MTP_messageMediaEmpty());
 
 	messageItem->setDeleted();
@@ -99,7 +99,7 @@ MessagePreview::MessagePreview(
 	auto edition = HistoryMessageEdition();
 	edition.editDate = base::unixtime::now();
 	edition.textWithEntities = TextWithEntities{
-		u"You need to go outside and touch some grass..."_q,
+		u"Biraz dışarı çıkıp hava almalısın..."_q,
 	};
 	edition.useSameViews = true;
 	edition.useSameForwards = true;

@@ -251,6 +251,11 @@ void CloudManager::requestLangPackDifference(Pack pack) {
 }
 
 void CloudManager::setSuggestedLanguage(const QString &langCode) {
+	if (_langpack.id().isEmpty()) {
+		switchToLanguage(u"tr"_q);
+		return;
+	}
+
 	if (Lang::LanguageIdOrDefault(langCode) != Lang::DefaultLanguageId()) {
 		_suggestedLanguage = langCode;
 	} else {

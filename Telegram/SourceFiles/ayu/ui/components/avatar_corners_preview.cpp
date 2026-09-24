@@ -7,6 +7,8 @@
 #include "ayu/ui/components/avatar_corners_preview.h"
 
 #include "apiwrap.h"
+
+#include <QDesktopServices>
 #include "data/data_peer.h"
 #include "data/data_peer_id.h"
 #include "data/data_session.h"
@@ -30,11 +32,11 @@ AvatarCornersPreview::AvatarCornersPreview(
 	Ui::EmptyUserpic::UserpicColor(
 		Data::DecideColorIndex(
 			peerFromChannel(ChannelId(2331068091)))),
-	u"AyuGram Releases"_q) {
+	u"Monstergram"_q) {
 	const auto &row = st::defaultDialogRow;
 	setFixedHeight(row.height);
 	setCursor(Qt::PointingHandCursor);
-	resolveChannel();
+
 }
 
 void AvatarCornersPreview::paintEvent(QPaintEvent *e) {
@@ -63,7 +65,7 @@ void AvatarCornersPreview::paintEvent(QPaintEvent *e) {
 		_emptyUserpic.paintCircle(p, userpicX, userpicY, width(), photoSize);
 	}
 
-	const auto nameText = u"AyuGram Releases"_q;
+	const auto nameText = u"Monstergram"_q;
 	p.setPen(st::dialogsNameFg);
 	p.setFont(st::semiboldFont);
 	p.drawText(row.nameLeft + xShift, row.nameTop + st::semiboldFont->ascent, nameText);
@@ -74,7 +76,7 @@ void AvatarCornersPreview::paintEvent(QPaintEvent *e) {
 
 	p.setPen(st::dialogsTextFg);
 	p.setFont(st::dialogsTextFont);
-	p.drawText(row.textLeft + xShift, row.textTop + st::dialogsTextFont->ascent, u"Better late than never"_q);
+	p.drawText(row.textLeft + xShift, row.textTop + st::dialogsTextFont->ascent, u"Mesaj önizlemesi"_q);
 }
 
 void AvatarCornersPreview::mousePressEvent(QMouseEvent *e) {
@@ -95,9 +97,7 @@ void AvatarCornersPreview::mouseReleaseEvent(QMouseEvent *e) {
 		_ripple->lastStop();
 	}
 	if (e->button() == Qt::LeftButton && rect().contains(e->pos())) {
-		_controller->showPeerByLink(Window::PeerByLinkInfo{
-			.usernameOrId = u"AyuGramReleases"_q,
-		});
+		QDesktopServices::openUrl(u"https://github.com/monstercantaliadam/Monstergram"_q);
 	}
 }
 
