@@ -177,11 +177,33 @@ void AyuLanguage::fetchError(QNetworkReply::NetworkError e) {
 
 void AyuLanguage::applyLanguageJson(QJsonDocument doc) {
 	const auto json = doc.object();
+	const auto turkish = Lang::GetInstance().id().startsWith(u"tr"_q);
 	for (const QString &brokenKey : json.keys()) {
 		auto key = qsl("ayu_") + brokenKey;
 		auto val = json.value(brokenKey).toString().replace(qsl("&amp;"), qsl("&"));
 		val.replace(qsl("AyuGram"), qsl("Monstergram"));
 		val.replace(qsl("AYUGRAM"), qsl("MONSTERGRAM"));
+		if (key == qsl("ayu_FirstLaunchAlert")) {
+			val = turkish
+				? u"Monstergram **ücretsiz** bir yazılımdır. Sürümleri projenin GitHub sayfasından edinin. Uygulamayı hesabınızla kullanma sorumluluğu size aittir."_q
+				: u"Monstergram is **free** software. Get releases from the project GitHub page. You are responsible for using this application with your account."_q;
+		} else if (key == qsl("ayu_ExteraChatsAlert")) {
+			val = turkish
+				? u"Monstergram desteği için projenin GitHub sayfasını kullanın."_q
+				: u"For Monstergram support, use the project GitHub page."_q;
+		} else if (key == qsl("ayu_SupporterPopup")) {
+			val = turkish
+				? u"**{item}** önceki projelerden birine verdiği destek için rozet aldı."_q
+				: u"**{item}** received a supporter badge for an upstream project."_q;
+		} else if (key == qsl("ayu_OfficialResourcePopup")) {
+			val = turkish
+				? u"**{item}** önceki projelerden birinin resmi kaynağıdır."_q
+				: u"**{item}** is an official resource of an upstream project."_q;
+		} else if (key == qsl("ayu_SettingsWatermark")) {
+			val = turkish
+				? u"Monstergram, Telegram Desktop tabanlı açık kaynaklı bir istemcidir."_q
+				: u"Monstergram is an open source client based on Telegram Desktop."_q;
+		}
 
 		if (key.endsWith("_Android")) {
 			continue;
