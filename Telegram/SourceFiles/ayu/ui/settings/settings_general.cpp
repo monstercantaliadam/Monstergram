@@ -274,7 +274,7 @@ void BuildQoLToggles(SectionBuilder &builder, AyuSectionBuilder &ayu) {
 
 	ayu.addSectionDivider();
 
-	builder.addSubsectionTitle(rpl::single(QString("Webview")));
+	builder.addSubsectionTitle(rpl::single(QString("Web görünümü")));
 
 	ayu.addSettingToggle({
 		.id = u"ayu/spoofWebviewAsAndroid"_q,

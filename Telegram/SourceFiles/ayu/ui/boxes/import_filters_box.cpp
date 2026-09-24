@@ -71,7 +71,7 @@ void FillImportFiltersBox(not_null<Ui::GenericBox*> box, bool import) {
 				object_ptr<Ui::InputField>(
 					container,
 					st::defaultInputField,
-					rpl::single(QString("URL")),
+					rpl::single(QString("Bağlantı")),
 					clipboardHasUrl ? clipboardText : QString()
 				)
 			);

@@ -271,7 +271,7 @@ QString GetAccountName(uint64 userId) {
 			return account->session().user()->name();
 		}
 	}
-	return QString("Unknown");
+	return QString("Bilinmiyor");
 }
 
 QString PickerLabel(uint64 userId) {

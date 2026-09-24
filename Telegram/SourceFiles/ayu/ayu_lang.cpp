@@ -40,6 +40,7 @@ AyuLanguage::AyuLanguage() = default;
 void AyuLanguage::init() {
 	if (!instance) instance = new AyuLanguage;
 	instance->loadCachedLanguage();
+	instance->applyBundledTurkishLanguage();
 }
 
 AyuLanguage *AyuLanguage::currentInstance() {
@@ -86,6 +87,16 @@ void AyuLanguage::loadCachedLanguage() {
 			LOG(("Loading cached AyuGram language: %1").arg(finalLangPackId));
 			applyLanguageJson(doc);
 		}
+	}
+}
+
+void AyuLanguage::applyBundledTurkishLanguage() {
+	if (!Lang::GetInstance().id().startsWith(u"tr"_q)) {
+		return;
+	}
+	auto file = QFile(u":/gui/lang/ayu/tr.json"_q);
+	if (file.open(QIODevice::ReadOnly)) {
+		applyLanguageJson(QJsonDocument::fromJson(file.readAll()));
 	}
 }
 
@@ -148,6 +159,7 @@ void AyuLanguage::fetchFinished() {
 		if (error.error == QJsonParseError::NoError) {
 			saveCachedLanguage(result, _currentLangId);
 			applyLanguageJson(doc);
+			applyBundledTurkishLanguage();
 		} else {
 			LOG(("Incorrect language JSON File."));
 		}

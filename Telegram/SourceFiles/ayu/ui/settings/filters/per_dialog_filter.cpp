@@ -37,7 +37,7 @@ QString PerDialogFiltersListRow::generateName() {
 		this->setPeer(from);
 		return PeerListRow::generateName();
 	}
-	return QString("UNKNOWN (ID: %1)").arg(QString::number(peerId.value & PeerId::kChatTypeMask));
+	return QString("BİLİNMEYEN (Kimlik: %1)").arg(QString::number(peerId.value & PeerId::kChatTypeMask));
 }
 
 PaintRoundImageCallback PerDialogFiltersListRow::generatePaintUserpicCallback(bool forceRound) {
@@ -52,7 +52,7 @@ PaintRoundImageCallback PerDialogFiltersListRow::generatePaintUserpicCallback(bo
 		const auto realId = peerId.value & PeerId::kChatTypeMask;
 		auto _userpicEmpty = std::make_unique<EmptyUserpic>(
 			EmptyUserpic::UserpicColor(realId % 7),
-			QString("U")); // U - Unknown
+			QString("B"));
 		_userpicEmpty->paintCircle(p, x, y, outerWidth, size);
 	};
 }

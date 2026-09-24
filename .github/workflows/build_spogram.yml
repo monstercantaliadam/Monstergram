@@ -2,6 +2,9 @@ name: Build Monstergram Windows
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/turkish-language-debug-build
 
 concurrency:
   group: monstergram-windows-${{ github.ref }}
@@ -168,9 +171,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.TBUILD }}\tdesktop\out
-          key: ${{ runner.os }}-x64-release-build-v1-${{ env.CACHE_KEY }}-${{ env.MSVC_VERSION }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-x64-debug-build-v1-${{ env.CACHE_KEY }}-${{ env.MSVC_VERSION }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            ${{ runner.os }}-x64-release-build-v1-${{ env.CACHE_KEY }}-${{ env.MSVC_VERSION }}-
+            ${{ runner.os }}-x64-debug-build-v1-${{ env.CACHE_KEY }}-${{ env.MSVC_VERSION }}-
 
       - name: Preserve unchanged source timestamps
         shell: cmd
@@ -210,19 +213,19 @@ jobs:
         run: |
           cd %TBUILD%\tdesktop\Telegram
           call configure.bat ^
-          -D CMAKE_CONFIGURATION_TYPES=Release ^
+          -D CMAKE_CONFIGURATION_TYPES=Debug ^
           -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT= ^
           -D DESKTOP_APP_DISABLE_AUTOUPDATE=OFF ^
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
 
-      - name: Build Monstergram Release
+      - name: Build Monstergram Debug
         shell: cmd
         env:
           CMAKE_BUILD_PARALLEL_LEVEL: 1
           _PreferredToolArchitecture: x64
         run: |
           cd %TBUILD%\tdesktop
-          cmake --build out --config Release --parallel 1 -- /p:CL_MPCount=1
+          cmake --build out --config Debug --target Telegram --parallel 1 -- /p:CL_MPCount=1
 
       - name: Record compiled source versions
         shell: cmd
@@ -234,12 +237,12 @@ jobs:
         continue-on-error: true
         with:
           path: ${{ env.TBUILD }}\tdesktop\out
-          key: ${{ runner.os }}-x64-release-build-v1-${{ env.CACHE_KEY }}-${{ env.MSVC_VERSION }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-x64-debug-build-v1-${{ env.CACHE_KEY }}-${{ env.MSVC_VERSION }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Package Monstergram Executable
         shell: cmd
         run: |
-          set OUT=%TBUILD%\tdesktop\out\Release
+          set OUT=%TBUILD%\tdesktop\out\Debug
           mkdir %GITHUB_WORKSPACE%\artifact
           if not exist "%OUT%\Monstergram.exe" (echo Monstergram.exe was not built & exit /b 1)
           copy /Y "%OUT%\Monstergram.exe" "%GITHUB_WORKSPACE%\artifact\Monstergram.exe"
@@ -249,5 +252,5 @@ jobs:
       - name: Upload Monstergram.exe Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Monstergram-Windows-x64
+          name: Monstergram-Windows-x64-Debug
           path: ${{ github.workspace }}\artifact\
