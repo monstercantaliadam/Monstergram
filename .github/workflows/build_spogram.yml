@@ -6,6 +6,8 @@ on:
     branches:
       - codex/turkish-language-debug-build
       - codex/monstergram-feature-pack
+    paths-ignore:
+      - .github/workflows/build_spogram.yml
 
 concurrency:
   group: monstergram-windows-${{ github.ref }}
@@ -226,7 +228,7 @@ jobs:
           _PreferredToolArchitecture: x64
         run: |
           cd %TBUILD%\tdesktop
-          cmake --build out --config Debug --target Telegram --parallel 1 -- /p:CL_MPCount=1
+          cmake --build out --config Debug --target Telegram --parallel 1 -- /p:CL_MPCount=2
 
       - name: Record compiled source versions
         shell: cmd
