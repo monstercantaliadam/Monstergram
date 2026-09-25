@@ -100,6 +100,8 @@ jobs:
           echo "$(sha256sum $TBUILD/tdesktop/Telegram/build/prepare/prepare.py | awk '{ print $1 }')" >> CACHE_KEY.txt
           echo "$SDK" >> CACHE_KEY.txt
           echo "CACHE_KEY=$(sha256sum CACHE_KEY.txt | awk '{ print $1 }')" >> $GITHUB_ENV
+          PATCH_KEY="$({ sha256sum "$TBUILD/tdesktop/Telegram/build/qt_version.py"; find "$TBUILD/tdesktop/Telegram/build/patches" -type f -print0 | sort -z | xargs -0 sha256sum; } | sha256sum | awk '{ print $1 }')"
+          echo "PATCH_KEY=$PATCH_KEY" >> $GITHUB_ENV
 
       - uses: ilammy/msvc-dev-cmd@v1.13.0
         name: Setup MSVC Native Tools
@@ -118,10 +120,10 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.OS }}-x64-third-party-v3-${{ env.CACHE_KEY }}-${{ env.PATCH_KEY }}
           restore-keys: |
+            ${{ runner.OS }}-x64-third-party-v3-${{ env.CACHE_KEY }}-
             ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}-
-            ${{ runner.OS }}-x64-third-party-${{ env.CACHE_KEY }}
 
       - name: Libraries Cache
         id: cache-libs
@@ -133,10 +135,10 @@ jobs:
             !${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\*
             !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.OS }}-x64-libs-v3-${{ env.CACHE_KEY }}-${{ env.PATCH_KEY }}
           restore-keys: |
+            ${{ runner.OS }}-x64-libs-v3-${{ env.CACHE_KEY }}-
             ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}-
-            ${{ runner.OS }}-x64-libs-${{ env.CACHE_KEY }}
 
       - name: Qt Cache
         id: cache-qt
@@ -145,10 +147,10 @@ jobs:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.OS }}-x64-qt-v3-${{ env.CACHE_KEY }}-${{ env.PATCH_KEY }}
           restore-keys: |
+            ${{ runner.OS }}-x64-qt-v3-${{ env.CACHE_KEY }}-
             ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-
-            ${{ runner.OS }}-x64-qt-${{ env.CACHE_KEY }}
 
       - name: Prepare Libraries
         shell: cmd
@@ -185,14 +187,14 @@ jobs:
 
       - name: Save ThirdParty Cache
         uses: actions/cache/save@v4
-        if: success()
+        if: ${{ success() && steps.cache-third-party.outputs.cache-hit != 'true' }}
         with:
           path: ${{ env.TBUILD }}\ThirdParty
-          key: ${{ runner.OS }}-x64-third-party-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.OS }}-x64-third-party-v3-${{ env.CACHE_KEY }}-${{ env.PATCH_KEY }}
 
       - name: Save Libraries Cache
         uses: actions/cache/save@v4
-        if: success()
+        if: ${{ success() && steps.cache-libs.outputs.cache-hit != 'true' }}
         with:
           path: |
             ${{ env.LibrariesPath }}\*
@@ -200,16 +202,16 @@ jobs:
             !${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\*
             !${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-libs-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.OS }}-x64-libs-v3-${{ env.CACHE_KEY }}-${{ env.PATCH_KEY }}
 
       - name: Save Qt Cache
         uses: actions/cache/save@v4
-        if: success()
+        if: ${{ success() && steps.cache-qt.outputs.cache-hit != 'true' }}
         with:
           path: |
             ${{ env.LibrariesPath }}\[qQ]t[_-]*
             ${{ env.LibrariesPath }}\cache_keys\[qQ]t[_-]*
-          key: ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.OS }}-x64-qt-v3-${{ env.CACHE_KEY }}-${{ env.PATCH_KEY }}
 
       - name: Configure CMake
         shell: cmd
@@ -222,6 +224,7 @@ jobs:
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
 
       - name: Build Monstergram Debug
+        id: build
         shell: pwsh
         env:
           CMAKE_BUILD_PARALLEL_LEVEL: 1
@@ -243,12 +246,14 @@ jobs:
           }
 
       - name: Record compiled source versions
+        if: ${{ success() || steps.build.outcome == 'failure' }}
         shell: cmd
         run: |
           python "%TBUILD%\tdesktop\.github\scripts\restore_build_mtime.py" save "%TBUILD%\tdesktop"
 
       - name: Save compiled build cache
         uses: actions/cache/save@v4
+        if: ${{ success() || steps.build.outcome == 'failure' }}
         continue-on-error: true
         with:
           path: ${{ env.TBUILD }}\tdesktop\out
