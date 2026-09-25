@@ -8824,6 +8824,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_DeletedHistoryNewer" = "Newer deleted message";
 "ayu_ToolsHeader" = "Message tools";
 "ayu_PreferencesHeader" = "Preferences";
+"ayu_HomeTitle" = "Welcome to Monstergram";
+"ayu_HomeSubtitle" = "Choose a chat on the left to start a conversation.";
 "ayu_SaveQuickReply" = "Save as Quick Reply";
 "ayu_DeleteQuickReply" = "Remove Quick Reply";
 "ayu_RegexFiltersAddError" = "Regex syntax error";

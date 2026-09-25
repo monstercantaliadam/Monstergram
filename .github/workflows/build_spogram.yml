@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - codex/turkish-language-debug-build
+      - codex/monstergram-feature-pack
 
 concurrency:
   group: monstergram-windows-${{ github.ref }}

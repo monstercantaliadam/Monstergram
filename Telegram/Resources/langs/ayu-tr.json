@@ -215,6 +215,8 @@
   "DeletedHistoryNewer": "Daha yeni silinen mesaj",
   "ToolsHeader": "Mesaj araçları",
   "PreferencesHeader": "Tercihler",
+  "HomeTitle": "Monstergram'a hoş geldin",
+  "HomeSubtitle": "Konuşmaya başlamak için soldan bir sohbet seç.",
   "SaveQuickReply": "Hazır Yanıt Olarak Kaydet",
   "DeleteQuickReply": "Hazır Yanıtı Kaldır",
   "RegexFiltersAddDescription_Android": "Düzenli ifadenizi test etmek ve hata ayıklamak için <![CDATA[<a href=\"https://regex101.com/r/3XHb17\">regex101.com</a>]]> adresini kullanabilirsiniz.",

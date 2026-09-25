@@ -17,6 +17,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "api/api_send_progress.h"
 #include "api/api_unread_things.h"
 #include "base/random.h"
+#include "ayu/ui/ayu_logo.h"
 #include "boxes/compose_ai_box.h"
 #include "ui/boxes/confirm_box.h"
 #include "boxes/delete_messages_box.h"
@@ -206,6 +207,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "calls/calls_instance.h"
 #include "styles/style_boxes.h"
 #include "styles/style_chat.h"
+#include "styles/style_ayu_styles.h"
 #include "styles/style_window.h"
 #include "styles/style_chat_helpers.h"
 #include "styles/style_info.h"
@@ -11390,33 +11392,97 @@ void HistoryWidget::paintEvent(QPaintEvent *e) {
 			}
 		}
 	} else {
-		const auto w = 0
-			+ st::msgServiceFont->width(tr::lng_willbe_history(tr::now))
-			+ st::msgPadding.left()
-			+ st::msgPadding.right();
-		const auto h = st::msgServiceFont->height
-			+ st::msgServicePadding.top()
-			+ st::msgServicePadding.bottom();
-		const auto tr = QRect(
-			(width() - w) / 2,
-			st::msgServiceMargin.top() + (height()
-				- fieldHeight()
-				- 2 * st::historySendPadding
-				- h
-				- st::msgServiceMargin.top()
-				- st::msgServiceMargin.bottom()) / 2,
-			w,
-			h);
-		const auto st = controller()->chatStyle();
-		HistoryView::ServiceMessagePainter::PaintBubble(p, st, tr);
-
-		p.setPen(st->msgServiceFg());
-		p.setFont(st::msgServiceFont->f);
-		p.drawTextLeft(
-			tr.left() + st::msgPadding.left(),
-			tr.top() + st::msgServicePadding.top(),
-			width(),
-			tr::lng_willbe_history(tr::now));
+		const auto availableHeight = height()
+			- fieldHeight()
+			- 2 * st::historySendPadding;
+		const auto cardWidth = std::min(
+			st::homeCardWidth,
+			width() - 2 * st::homeCardOuterMargin);
+		const auto cardHeight = std::min(
+			st::homeCardHeight,
+			availableHeight - 2 * st::homeCardOuterMargin);
+		if (cardWidth <= 0 || cardHeight <= 0) {
+			return;
+		}
+		const auto card = QRect(
+			(width() - cardWidth) / 2,
+			(availableHeight - cardHeight) / 2,
+			cardWidth,
+			cardHeight);
+		{
+			const auto hq = PainterHighQualityEnabler(p);
+			p.setPen(Qt::NoPen);
+			p.setBrush(st::windowBg);
+			p.drawRoundedRect(
+				card,
+				st::homeCardRadius,
+				st::homeCardRadius);
+		}
+		if (cardHeight < st::homeCardCompactHeight) {
+			p.setPen(st::windowFg);
+			p.setFont(st::homeSubtitleFont->f);
+			p.drawText(
+				card.adjusted(
+					st::homeCardPadding,
+					st::homeCardPadding,
+					-st::homeCardPadding,
+					-st::homeCardPadding),
+				Qt::AlignCenter | Qt::TextWordWrap,
+				tr::ayu_HomeSubtitle(tr::now));
+			return;
+		}
+		const auto logoSize = std::min(
+			st::homeLogoSize,
+			cardHeight / 3);
+		const auto logo = AyuAssets::currentAppLogoPad();
+		if (!logo.isNull()) {
+			const auto logoRect = QRect(
+				card.center().x() - logoSize / 2,
+				card.top() + st::homeCardPadding,
+				logoSize,
+				logoSize);
+			p.setRenderHint(QPainter::SmoothPixmapTransform);
+			p.drawImage(logoRect, logo);
+		}
+		const auto titleTop = card.top()
+			+ st::homeCardPadding
+			+ logoSize
+			+ st::homeCardSpacing;
+		const auto titleRect = QRect(
+			card.left() + st::homeCardPadding,
+			titleTop,
+			cardWidth - 2 * st::homeCardPadding,
+			st::homeTitleFont->height);
+		p.setPen(st::windowFg);
+		p.setFont(st::homeTitleFont->f);
+		p.drawText(titleRect, Qt::AlignCenter, tr::ayu_HomeTitle(tr::now));
+		const auto accent = QRect(
+			card.center().x() - st::homeAccentWidth / 2,
+			titleRect.bottom() + st::homeCardSpacing,
+			st::homeAccentWidth,
+			st::homeAccentHeight);
+		{
+			const auto hq = PainterHighQualityEnabler(p);
+			p.setPen(Qt::NoPen);
+			p.setBrush(st::windowActiveTextFg);
+			p.drawRoundedRect(
+				accent,
+				st::homeAccentRadius,
+				st::homeAccentRadius);
+		}
+		const auto subtitleRect = QRect(
+			titleRect.left(),
+			accent.bottom() + st::homeCardSpacing,
+			titleRect.width(),
+			card.bottom() - accent.bottom()
+				- st::homeCardPadding
+				- st::homeCardSpacing);
+		p.setPen(st::windowSubTextFg);
+		p.setFont(st::homeSubtitleFont->f);
+		p.drawText(
+			subtitleRect,
+			Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap,
+			tr::ayu_HomeSubtitle(tr::now));
 	}
 }
 

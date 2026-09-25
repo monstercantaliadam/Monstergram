@@ -69,6 +69,20 @@ deletedHistoryNewer: IconButton(topBarSearch) {
 	iconOver: icon {{ "calendar_down", menuIconFgOver }};
 }
 
+homeCardWidth: 440px;
+homeCardHeight: 250px;
+homeCardCompactHeight: 200px;
+homeCardOuterMargin: 20px;
+homeCardPadding: 28px;
+homeCardSpacing: 12px;
+homeCardRadius: 22px;
+homeLogoSize: 72px;
+homeAccentWidth: 36px;
+homeAccentHeight: 4px;
+homeAccentRadius: 2px;
+homeTitleFont: font(22px semibold);
+homeSubtitleFont: font(14px);
+
 exteraBadgeToast: Toast(defaultToast) {
 	minWidth: 40px;
 	maxWidth: 480px;
