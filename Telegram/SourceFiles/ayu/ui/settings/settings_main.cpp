@@ -70,7 +70,7 @@ void BuildVersionInfo(SectionBuilder &builder) {
 			.widget = object_ptr<Ui::FlatLabel>(
 				ctx.container,
 				rpl::single(
-					QString("Monstergram Desktop sürüm ")
+					u"Monstergram Desktop · "_q
 					+ QString::fromLatin1(AppVersionStr)),
 				st::boxTitle),
 			.align = style::al_top,
@@ -92,13 +92,7 @@ void BuildVersionInfo(SectionBuilder &builder) {
 
 void BuildCategories(SectionBuilder &builder) {
 	builder.addSkip();
-	builder.addSkip();
-	builder.addSkip();
-	builder.addSkip();
-	builder.addDivider();
-	builder.addSkip();
-
-	builder.addSubsectionTitle(tr::ayu_CategoriesHeader());
+	builder.addSubsectionTitle(tr::ayu_ToolsHeader());
 
 	builder.addSectionButton({
 		.title = rpl::single(u"Monstergram"_q),
@@ -111,19 +105,21 @@ void BuildCategories(SectionBuilder &builder) {
 		.icon = { &st::menuIconTagFilter },
 	});
 	builder.addSectionButton({
-		.title = tr::ayu_CategoryGeneral(),
-		.targetSection = AyuGeneral::Id(),
-		.icon = { &st::menuIconShowAll },
+		.title = tr::ayu_CategoryChats(),
+		.targetSection = AyuChats::Id(),
+		.icon = { &st::menuIconChatBubble },
 	});
+	builder.addSkip();
+	builder.addSubsectionTitle(tr::ayu_PreferencesHeader());
 	builder.addSectionButton({
 		.title = tr::ayu_CategoryAppearance(),
 		.targetSection = AyuAppearance::Id(),
 		.icon = { &st::menuIconPalette },
 	});
 	builder.addSectionButton({
-		.title = tr::ayu_CategoryChats(),
-		.targetSection = AyuChats::Id(),
-		.icon = { &st::menuIconChatBubble },
+		.title = tr::ayu_CategoryGeneral(),
+		.targetSection = AyuGeneral::Id(),
+		.icon = { &st::menuIconShowAll },
 	});
 	builder.addSectionButton({
 		.title = tr::ayu_CategoryOther(),
@@ -159,7 +155,6 @@ const auto kMeta = BuildHelper({
 	.icon = &st::menuIconPremium,
 }, [](SectionBuilder &builder) {
 	BuildLogo(builder);
-	builder.addSkip();
 	BuildVersionInfo(builder);
 	BuildCategories(builder);
 	BuildLinks(builder);

@@ -58,6 +58,9 @@
 #include <QtGui/QClipboard>
 #include <QtWidgets/QApplication>
 
+#include <optional>
+#include <utility>
+
 namespace MessageHistory {
 namespace {
 
@@ -711,6 +714,7 @@ void InnerWidget::applySearch(const QString &query) {
 		return;
 	}
 	if (_searchQuery != query) {
+		_pendingOlderNavigation = false;
 		++_loadRequestNum;
 		_loadingUp = false;
 		_loadingDown = false;
@@ -725,6 +729,33 @@ void InnerWidget::applySearch(const QString &query) {
 		updateMinMaxIds();
 		updateEmptyText();
 		updateSize();
+		preloadMore(Direction::Up);
+	}
+}
+
+void InnerWidget::navigateDeletedMessage(bool newer) {
+	if (_item || _items.empty()) {
+		return;
+	}
+	const auto current = _visibleTop;
+	const auto margin = st::lineWidth;
+	auto target = std::optional<int>();
+	for (const auto &item : _items) {
+		const auto top = itemTop(item.get());
+		if (newer && top > current + margin
+			&& (!target || top < *target)) {
+			target = top;
+		} else if (!newer && top < current - margin
+			&& (!target || top > *target)) {
+			target = top;
+		}
+	}
+	if (target) {
+		_scrollToSignal.fire_copy(*target);
+	} else if (newer) {
+		_scrollToSignal.fire_copy(ScrollMax);
+	} else if (!_upLoaded) {
+		_pendingOlderNavigation = true;
 		preloadMore(Direction::Up);
 	}
 }
@@ -782,6 +813,9 @@ void InnerWidget::addMessages(Direction direction, const std::vector<AyuMessageB
 	auto up = (direction == Direction::Up);
 	if (messages.empty()) {
 		(up ? _upLoaded : _downLoaded) = true;
+		if (up) {
+			_pendingOlderNavigation = false;
+		}
 		update();
 		return;
 	}
@@ -841,6 +875,9 @@ void InnerWidget::addMessages(Direction direction, const std::vector<AyuMessageB
 		}
 		updateMinMaxIds();
 		itemsAdded(direction, newItemsCount - oldItemsCount);
+	}
+	if (up && std::exchange(_pendingOlderNavigation, false)) {
+		navigateDeletedMessage(false);
 	}
 	update();
 }

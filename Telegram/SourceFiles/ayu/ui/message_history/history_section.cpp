@@ -17,6 +17,7 @@
 #include "profile/profile_back_button.h"
 #include "styles/style_chat.h"
 #include "styles/style_chat_helpers.h"
+#include "styles/style_ayu_styles.h"
 #include "styles/style_info.h"
 #include "ui/effects/animations.h"
 #include "ui/ui_utility.h"
@@ -43,6 +44,7 @@ public:
 
 	[[nodiscard]] rpl::producer<> searchCancelRequests() const;
 	[[nodiscard]] rpl::producer<QString> searchRequests() const;
+	[[nodiscard]] rpl::producer<bool> navigationRequests() const;
 
 	// When animating mode is enabled the content is hidden and the
 	// whole fixed bar acts like a back button.
@@ -75,6 +77,8 @@ private:
 	object_ptr<Ui::InputField> _field;
 	object_ptr<Profile::BackButton> _backButton;
 	object_ptr<Ui::IconButton> _search;
+	object_ptr<Ui::IconButton> _older;
+	object_ptr<Ui::IconButton> _newer;
 	object_ptr<Ui::CrossButton> _cancel;
 
 	Ui::Animations::Simple _searchShownAnimation;
@@ -85,6 +89,7 @@ private:
 
 	rpl::event_stream<> _searchCancelRequests;
 	rpl::event_stream<QString> _searchRequests;
+	rpl::event_stream<bool> _navigationRequests;
 };
 
 object_ptr<Window::SectionWidget> SectionMemento::createWidget(
@@ -110,11 +115,17 @@ FixedBar::FixedBar(
 , _field(this, st::defaultMultiSelectSearchField, tr::lng_dlg_filter())
 , _backButton(this)
 , _search(this, st::topBarSearch)
+, _older(this, st::deletedHistoryOlder)
+, _newer(this, st::deletedHistoryNewer)
 , _cancel(this, st::historyAdminLogCancelSearch)
 , _searchEnabled(searchEnabled) {
 	_backButton->moveToLeft(0, 0);
 	_backButton->setClickedCallback([=] { goBack(); });
 	_search->setClickedCallback([=] { showSearch(); });
+	_older->setClickedCallback([=] { _navigationRequests.fire_copy(false); });
+	_newer->setClickedCallback([=] { _navigationRequests.fire_copy(true); });
+	_older->setToolTip(tr::ayu_DeletedHistoryOlder(tr::now));
+	_newer->setToolTip(tr::ayu_DeletedHistoryNewer(tr::now));
 	_cancel->setClickedCallback([=] { cancelSearch(); });
 	_field->hide();
 	_field->cancelled() | rpl::on_next([=] {
@@ -130,6 +141,8 @@ FixedBar::FixedBar(
 	_cancel->hide(anim::type::instant);
 	if (!_searchEnabled) {
 		_search->hide();
+		_older->hide();
+		_newer->hide();
 	}
 
 	Info::Profile::NameValue(peer) | rpl::on_next([=](QString name) {
@@ -161,6 +174,8 @@ void FixedBar::toggleSearch() {
 		st::historyAdminLogSearchSlideDuration);
 	_search->setDisabled(_searchShown);
 	if (_searchShown) {
+		_older->hide();
+		_newer->hide();
 		_field->show();
 		_field->setFocus();
 	} else {
@@ -171,6 +186,10 @@ void FixedBar::toggleSearch() {
 void FixedBar::searchAnimationCallback() {
 	if (!_searchShownAnimation.animating()) {
 		_field->setVisible(_searchShown);
+		if (!_searchShown && _searchEnabled) {
+			_older->show();
+			_newer->show();
+		}
 		_search->setIconOverride(
 			_searchShown ? &st::topBarSearch.icon : nullptr,
 			_searchShown ? &st::topBarSearch.icon : nullptr);
@@ -215,12 +234,18 @@ rpl::producer<QString> FixedBar::searchRequests() const {
 	return _searchRequests.events();
 }
 
+rpl::producer<bool> FixedBar::navigationRequests() const {
+	return _navigationRequests.events();
+}
+
 int FixedBar::resizeGetHeight(int newWidth) {
 	const auto offset = st::historySendRight + st::lineWidth;
 	const auto searchShownLeft = st::topBarArrowPadding.left();
 	const auto searchHiddenLeft = _searchEnabled
 		? newWidth - _search->width() - offset
 		: newWidth;
+	const auto navigationLeft = searchHiddenLeft
+		- (_searchEnabled ? _older->width() + _newer->width() : 0);
 	const auto searchShown = _searchShownAnimation.value(_searchShown
 		? 1.
 		: 0.);
@@ -230,9 +255,14 @@ int FixedBar::resizeGetHeight(int newWidth) {
 		searchShown);
 	if (_searchEnabled) {
 		_search->moveToLeft(searchCurrentLeft, 0);
+		_newer->moveToLeft(searchHiddenLeft - _newer->width(), 0);
+		_older->moveToLeft(navigationLeft, 0);
 	}
 	_backButton->setOpacity(1. - searchShown);
-	_backButton->resizeToWidth(searchCurrentLeft);
+	_backButton->resizeToWidth(anim::interpolate(
+		navigationLeft,
+		searchCurrentLeft,
+		searchShown));
 	_backButton->moveToLeft(0, 0);
 
 	const auto cancelLeft = newWidth - _cancel->width() - offset;
@@ -263,6 +293,11 @@ void FixedBar::setAnimatingMode(bool enabled) {
 			_cancel->setVisible(false);
 			if (!_searchEnabled) {
 				_search->hide();
+				_older->hide();
+				_newer->hide();
+			} else if (_searchShown) {
+				_older->hide();
+				_newer->hide();
 			}
 		}
 		show();
@@ -305,6 +340,10 @@ Widget::Widget(
 	_fixedBar->searchRequests(
 	) | rpl::on_next([=](const QString &query) {
 		_inner->applySearch(query);
+	}, lifetime());
+	_fixedBar->navigationRequests(
+	) | rpl::on_next([=](bool newer) {
+		_inner->navigateDeletedMessage(newer);
 	}, lifetime());
 	_fixedBar->show();
 

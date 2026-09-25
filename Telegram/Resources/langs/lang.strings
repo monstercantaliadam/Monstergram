@@ -8820,6 +8820,10 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_RegexTestMatch" = "This message would be hidden.";
 "ayu_RegexTestNoMatch" = "This message would stay visible.";
 "ayu_QuickReplies" = "Quick Replies";
+"ayu_DeletedHistoryOlder" = "Older deleted message";
+"ayu_DeletedHistoryNewer" = "Newer deleted message";
+"ayu_ToolsHeader" = "Message tools";
+"ayu_PreferencesHeader" = "Preferences";
 "ayu_SaveQuickReply" = "Save as Quick Reply";
 "ayu_DeleteQuickReply" = "Remove Quick Reply";
 "ayu_RegexFiltersAddError" = "Regex syntax error";
@@ -9034,7 +9038,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_MutualContactInfo" = "This contact is mutual.";
 "ayu_SessionInfoOfficialApp" = "Official app";
 "ayu_SettingsWatermark" = "Monstergram is an open source client based on Telegram Desktop.";
-"ayu_SettingsDescription" = "Telegram Desktop fork focused on customization and ToS-breaking features.";
+"ayu_SettingsDescription" = "Personalize chats, filter messages, and use quick replies.";
 "ayu_ConfirmationSticker" = "Do you want to send this sticker?";
 "ayu_ConfirmationGIF" = "Do you want to send this GIF?";
 "ayu_ConfirmationVoice" = "Do you want to send this voice message?";

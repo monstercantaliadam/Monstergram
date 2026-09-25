@@ -79,6 +79,7 @@ public:
 	void restoreState(not_null<SectionMemento*> memento);
 
 	void applySearch(const QString &query);
+	void navigateDeletedMessage(bool newer);
 
 	// Ui::AbstractTooltipShower interface.
 	QString tooltipText() const override;
@@ -330,6 +331,7 @@ private:
 	base::Timer _trippleClickTimer;
 
 	rpl::event_stream<int> _scrollToSignal;
+	bool _pendingOlderNavigation = false;
 
 };
 

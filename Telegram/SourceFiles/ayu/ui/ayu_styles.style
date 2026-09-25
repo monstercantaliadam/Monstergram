@@ -59,6 +59,16 @@ topBarRecentActions: IconButton {
 	}
 }
 
+deletedHistoryOlder: IconButton(topBarSearch) {
+	icon: icon {{ "calendar_down-flip_vertical", menuIconFg }};
+	iconOver: icon {{ "calendar_down-flip_vertical", menuIconFgOver }};
+}
+
+deletedHistoryNewer: IconButton(topBarSearch) {
+	icon: icon {{ "calendar_down", menuIconFg }};
+	iconOver: icon {{ "calendar_down", menuIconFgOver }};
+}
+
 exteraBadgeToast: Toast(defaultToast) {
 	minWidth: 40px;
 	maxWidth: 480px;
