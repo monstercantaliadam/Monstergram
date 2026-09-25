@@ -224,7 +224,7 @@ void RegexEditBuilder(
 			return;
 		}
 		matcher->setTimeLimit(100, status);
-		const auto matched = matcher->find(status);
+		const auto matched = matcher->find(status) != 0;
 		if (U_FAILURE(status)) {
 			testResult->setText(tr::ayu_RegexTestInvalid(tr::now));
 			return;

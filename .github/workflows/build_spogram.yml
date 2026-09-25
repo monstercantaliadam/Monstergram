@@ -6,6 +6,8 @@ on:
     branches:
       - codex/turkish-language-debug-build
       - codex/monstergram-feature-pack
+    paths-ignore:
+      - .github/workflows/build_spogram.yml
 
 concurrency:
   group: monstergram-windows-${{ github.ref }}
@@ -231,7 +233,7 @@ jobs:
           & cmake --build out --config Debug --target Telegram --parallel 1 -- /p:CL_MPCount=2 2>&1 | Tee-Object -FilePath $buildLog
           $buildExit = $LASTEXITCODE
           if ($buildExit -ne 0) {
-            $errors = @(Get-Content $buildLog | Select-String -Pattern 'error C[0-9]+|error LNK[0-9]+|error MSB[0-9]+|fatal error|error:')
+            $errors = @(Get-Content $buildLog | Select-String -Pattern 'warning C[0-9]+|error C[0-9]+|error LNK[0-9]+|error MSB[0-9]+|fatal error|error:')
             $details = if ($errors.Count) { $errors | Select-Object -Last 30 } else { Get-Content $buildLog -Tail 12 }
             foreach ($detail in $details) {
               $line = $detail.ToString().Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
