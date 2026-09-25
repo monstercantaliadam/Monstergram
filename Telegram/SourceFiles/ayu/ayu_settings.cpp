@@ -380,7 +380,7 @@ void from_json(const nlohmann::json &j, MessageShotSettings &s) {
 }
 
 AyuSettings::AyuSettings()
-: _appIcon(AyuAssets::DEFAULT_ICON)
+: _appIcon(AyuAssets::MONSTERGRAM_MIDNIGHT_ICON)
 , _editedMark(Core::IsAppLaunched() ? tr::lng_edited(tr::now) : QString("edited")) {
 }
 

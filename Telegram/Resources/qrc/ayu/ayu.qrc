@@ -1,6 +1,14 @@
 <RCC>
     <qresource prefix="/gui">
         <file alias="lang/ayu/tr.json">../../langs/ayu-tr.json</file>
+        <file alias="art/ayu/monstergram-midnight/app.svg">../../art/ayu/monstergram-midnight/app.svg</file>
+        <file alias="art/ayu/monstergram-midnight/app_icon.ico">../../art/ayu/monstergram-midnight/app_icon.ico</file>
+        <file alias="art/ayu/monstergram-ocean/app.svg">../../art/ayu/monstergram-ocean/app.svg</file>
+        <file alias="art/ayu/monstergram-ocean/app_icon.ico">../../art/ayu/monstergram-ocean/app_icon.ico</file>
+        <file alias="art/ayu/monstergram-sunset/app.svg">../../art/ayu/monstergram-sunset/app.svg</file>
+        <file alias="art/ayu/monstergram-sunset/app_icon.ico">../../art/ayu/monstergram-sunset/app_icon.ico</file>
+        <file alias="art/ayu/monstergram-forest/app.svg">../../art/ayu/monstergram-forest/app.svg</file>
+        <file alias="art/ayu/monstergram-forest/app_icon.ico">../../art/ayu/monstergram-forest/app_icon.ico</file>
         <file alias="art/ayu/alt/app.svg">../../art/ayu/alt/app.svg</file>
         <file alias="art/ayu/alt/app_icon.ico">../../art/ayu/alt/app_icon.ico</file>
         <file alias="art/ayu/bard/app.svg">../../art/ayu/bard/app.svg</file>

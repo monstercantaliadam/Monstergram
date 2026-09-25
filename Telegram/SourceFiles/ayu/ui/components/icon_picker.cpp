@@ -22,6 +22,10 @@
 namespace {
 
 const QVector<QString> icons{
+	AyuAssets::MONSTERGRAM_MIDNIGHT_ICON,
+	AyuAssets::MONSTERGRAM_OCEAN_ICON,
+	AyuAssets::MONSTERGRAM_SUNSET_ICON,
+	AyuAssets::MONSTERGRAM_FOREST_ICON,
 	AyuAssets::DEFAULT_ICON,
 	AyuAssets::ALT_ICON,
 	AyuAssets::DISCORD_ICON,

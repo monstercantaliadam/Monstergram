@@ -10,6 +10,10 @@
 
 namespace AyuAssets {
 
+ICON(MONSTERGRAM_MIDNIGHT, "monstergram-midnight");
+ICON(MONSTERGRAM_OCEAN, "monstergram-ocean");
+ICON(MONSTERGRAM_SUNSET, "monstergram-sunset");
+ICON(MONSTERGRAM_FOREST, "monstergram-forest");
 ICON(DEFAULT, "default");
 ICON(ALT, "alt");
 ICON(DISCORD, "discord");
