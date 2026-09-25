@@ -153,6 +153,8 @@ jobs:
             ${{ runner.OS }}-x64-qt-v2-${{ env.CACHE_KEY }}-
 
       - name: Prepare Libraries
+        id: prepare
+        if: ${{ steps.cache-third-party.outputs.cache-hit != 'true' || steps.cache-libs.outputs.cache-hit != 'true' || steps.cache-qt.outputs.cache-hit != 'true' }}
         shell: cmd
         env:
           GYP_MSVS_OVERRIDE_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\'
@@ -161,6 +163,7 @@ jobs:
           call %TBUILD%\tdesktop\Telegram\build\prepare\win.bat silent
 
       - name: Free disk space
+        if: ${{ steps.prepare.outcome == 'success' }}
         shell: bash
         run: |
           find $LibrariesPath '(' '(' ! '(' -name '*.lib' -o -name '*.a' -o -name '*.exe' -o -name '*.h' -o -name '*.hpp' -o -name '*.inc' -o -name '*.cmake' -o -path '*/include/*' -o -path '*/objects-*' -o -path '*/cache_keys/*' -o -path '*/patches/*' ')' -type f ')' -o -empty ')' -delete || true
