@@ -6,8 +6,6 @@ on:
     branches:
       - codex/turkish-language-debug-build
       - codex/monstergram-feature-pack
-    paths-ignore:
-      - .github/workflows/build_spogram.yml
 
 concurrency:
   group: monstergram-windows-${{ github.ref }}
@@ -222,13 +220,25 @@ jobs:
           -D DESKTOP_APP_DISABLE_CRASH_REPORTS=OFF
 
       - name: Build Monstergram Debug
-        shell: cmd
+        shell: pwsh
         env:
           CMAKE_BUILD_PARALLEL_LEVEL: 1
           _PreferredToolArchitecture: x64
         run: |
-          cd %TBUILD%\tdesktop
-          cmake --build out --config Debug --target Telegram --parallel 1 -- /p:CL_MPCount=2
+          Set-Location (Join-Path $env:TBUILD 'tdesktop')
+          $PSNativeCommandUseErrorActionPreference = $false
+          $buildLog = Join-Path $env:RUNNER_TEMP 'monstergram-build.log'
+          & cmake --build out --config Debug --target Telegram --parallel 1 -- /p:CL_MPCount=2 2>&1 | Tee-Object -FilePath $buildLog
+          $buildExit = $LASTEXITCODE
+          if ($buildExit -ne 0) {
+            $errors = @(Get-Content $buildLog | Select-String -Pattern 'error C[0-9]+|error LNK[0-9]+|error MSB[0-9]+|fatal error|error:')
+            $details = if ($errors.Count) { $errors | Select-Object -Last 30 } else { Get-Content $buildLog -Tail 12 }
+            foreach ($detail in $details) {
+              $line = $detail.ToString().Replace('%', '%25').Replace("`r", '%0D').Replace("`n", '%0A')
+              Write-Output "::error::$line"
+            }
+            exit $buildExit
+          }
 
       - name: Record compiled source versions
         shell: cmd
